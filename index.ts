@@ -51,8 +51,9 @@ export default {
       
       // 如果仍然没有 token，使用环境变量
       if (!bearerToken) {
-        bearerToken = env.DEFAULT_BEARER_TOKEN;
+        bearerToken = env.DEFAULT_BEARER_TOKEN ?? null;
       }
+      console.info("Using bearer token:", bearerToken);
 
       if (!bearerToken) {
         return new Response(

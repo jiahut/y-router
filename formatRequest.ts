@@ -116,6 +116,7 @@ export function mapModel(anthropicModel: string): string {
 
 export function formatAnthropicToOpenAI(body: MessageCreateParamsBase): any {
   const { model, messages, system = [], temperature, tools, stream } = body;
+  console.log("model =", model);
 
   const openAIMessages = Array.isArray(messages)
     ? messages.flatMap((anthropicMessage) => {

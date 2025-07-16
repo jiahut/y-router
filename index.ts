@@ -38,13 +38,25 @@ export default {
     if (url.pathname === "/v1/messages" && request.method === "POST") {
       const anthropicRequest = await request.json();
       const openaiRequest = formatAnthropicToOpenAI(anthropicRequest);
-      // 优先使用环境变量中的 DEFAULT_BEARER_TOKEN
-      const bearerToken =
-        env.DEFAULT_BEARER_TOKEN || request.headers.get("x-api-key");
+      // 优先级：x-api-key header > Authorization header > 环境变量 DEFAULT_BEARER_TOKEN
+      let bearerToken = request.headers.get("x-api-key");
+      
+      // 如果没有 x-api-key，尝试从 Authorization header 中提取
+      if (!bearerToken) {
+        const authHeader = request.headers.get("Authorization");
+        if (authHeader && authHeader.startsWith("Bearer ")) {
+          bearerToken = authHeader.substring(7); // 移除 "Bearer " 前缀
+        }
+      }
+      
+      // 如果仍然没有 token，使用环境变量
+      if (!bearerToken) {
+        bearerToken = env.DEFAULT_BEARER_TOKEN;
+      }
 
       if (!bearerToken) {
         return new Response(
-          "Bearer token is required. Please provide x-api-key header or set DEFAULT_BEARER_TOKEN environment variable.",
+          "Bearer token is required. Please provide x-api-key header, Authorization header, or set DEFAULT_BEARER_TOKEN environment variable.",
           {
             status: 401,
             headers: { "Content-Type": "text/plain" },

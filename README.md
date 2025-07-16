@@ -104,7 +104,7 @@ This allows you to use [Claude Code](https://claude.ai/code) with OpenRouter's v
    # Optional: defaults to https://openrouter.ai/api/v1
    wrangler secret put OPENROUTER_BASE_URL
    
-   # Optional: set default bearer token (if not provided via x-api-key header)
+   # Optional: set default bearer token (if not provided via x-api-key or Authorization header)
    wrangler secret put DEFAULT_BEARER_TOKEN
    ```
 
@@ -116,13 +116,13 @@ This allows you to use [Claude Code](https://claude.ai/code) with OpenRouter's v
 ## Environment Variables
 
 - `OPENROUTER_BASE_URL` (optional): Base URL for the target API. Defaults to `https://openrouter.ai/api/v1`
-- `DEFAULT_BEARER_TOKEN` (optional): Default bearer token to use when no `x-api-key` header is provided in requests
+- `DEFAULT_BEARER_TOKEN` (optional): Default bearer token to use when no `x-api-key` or `Authorization` header is provided in requests
 
 ## API Usage
 
-Send requests to `/v1/messages` using Anthropic's format:
+Send requests to `/v1/messages` using Anthropic's format. Bearer token can be provided in three ways (in order of priority):
 
-### With API key in header (recommended)
+### 1. With x-api-key header (recommended)
 ```bash
 curl -X POST https://cc.yovy.app/v1/messages \
   -H "Content-Type: application/json" \
@@ -134,8 +134,20 @@ curl -X POST https://cc.yovy.app/v1/messages \
   }'
 ```
 
-### Using default bearer token from environment variable
-If you've set `DEFAULT_BEARER_TOKEN` in your Cloudflare Worker environment, you can make requests without the `x-api-key` header:
+### 2. With Authorization header
+```bash
+curl -X POST https://cc.yovy.app/v1/messages \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer your-openrouter-key" \
+  -d '{
+    "model": "claude-sonnet-4-20250514",
+    "messages": [{"role": "user", "content": "Hello, Claude"}],
+    "max_tokens": 100
+  }'
+```
+
+### 3. Using default bearer token from environment variable
+If you've set `DEFAULT_BEARER_TOKEN` in your Cloudflare Worker environment, you can make requests without any authentication headers:
 
 ```bash
 curl -X POST https://cc.yovy.app/v1/messages \

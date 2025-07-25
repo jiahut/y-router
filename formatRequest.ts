@@ -99,12 +99,11 @@ function validateOpenAIToolCalls(messages: any[]): any[] {
 }
 
 export function mapModel(anthropicModel: string): string {
-  // If model already contains '/', it's an OpenRouter model ID - return as-is
-  if (anthropicModel.includes('/')) {
-    return anthropicModel;
-  }
-  
-  if (anthropicModel.includes('haiku')) {
+  if (anthropicModel.includes('qwen3-coder')) {
+    return 'Qwen/Qwen3-Coder-480B-A35B-Instruct';
+  } else if (anthropicModel.includes('kimi-k2')) {
+    return 'moonshotai/Kimi-K2-Instruct';
+  } else if (anthropicModel.includes('haiku')) {
     return 'anthropic/claude-3.5-haiku';
   } else if (anthropicModel.includes('sonnet')) {
     return 'anthropic/claude-sonnet-4';
@@ -116,7 +115,6 @@ export function mapModel(anthropicModel: string): string {
 
 export function formatAnthropicToOpenAI(body: MessageCreateParamsBase): any {
   const { model, messages, system = [], temperature, tools, stream } = body;
-  console.log("model =", model);
 
   const openAIMessages = Array.isArray(messages)
     ? messages.flatMap((anthropicMessage) => {

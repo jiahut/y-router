@@ -53,7 +53,6 @@ export default {
       if (!bearerToken) {
         bearerToken = env.DEFAULT_BEARER_TOKEN ?? null;
       }
-      console.info("Using bearer token:", bearerToken);
 
       if (!bearerToken) {
         return new Response(
@@ -65,7 +64,11 @@ export default {
         );
       }
 
-      const baseUrl = env.OPENROUTER_BASE_URL || "https://openrouter.ai/api/v1";
+      const baseUrl = env.OPENROUTER_BASE_URL || "https://api-inference.modelscope.cn/v1"
+      console.info("Request:", JSON.stringify({
+        model: openaiRequest.model,
+        token: bearerToken ? bearerToken.substring(0, 8) + "..." + bearerToken.slice(-4) : "null"
+      }));
       const openaiResponse = await fetch(`${baseUrl}/chat/completions`, {
         method: "POST",
         headers: {
